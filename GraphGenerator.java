@@ -1,11 +1,11 @@
-﻿
+﻿ //à voir !! import de la lib
 import java.util.*
 
 public class GraphGenarator {
 	private const String URL = "#H4104 url";
 	private const String URI = "#H4104 uri";
-	protected String result;
-	private const String BEGGIN = "SELECT * WHERE{?s , ?s, ?o. FILTER(?s in (";
+	protected String result; // String à renvoyer sur la console
+	private const String BEGGIN = "SELECT * WHERE{?s , ?s, ?o. FILTER(?s in ("; //début de la requête SPARQL
 
 	public void main(String[] args){
 		Scanner scan = new Scanner(System.in);
@@ -26,7 +26,7 @@ public class GraphGenarator {
 					  request = request.substring(0, request.length()-1);
 					}
 					request += ")) }"; // requête finie !
-					sendResquest(request);
+					sendRequest(request);
 				}
 				
 				//some shit here
@@ -44,11 +44,25 @@ public class GraphGenarator {
 	}
 	
 	public void sendRequest(String request){
-		static String urlBeggin = "http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=";
-		static String urlEnd = "+&format=json&timeout=30000";
-		request = urlBeggin + URLEncoder.encode(request,"UTF-8") + urlEnd;
-	
+		static String ur = "http://dbpedia.org/sparql";
+		static String urlEnd = "&format=json&timeout=30000";
+		request = "?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=" + URLEncoder.encode(request,"UTF-8") + urlEnd;
+		URL url = new URL(ur);
+		URLConnection  conn = (HttpURLConnection) url.openConnection();
+		conn.setDoOutput(true);
+		OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+		writer.write(request);
+		writer.flush();
+		//recuperation du code html
+		String ligne = null,jsonResult=null;
+		BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		while ((ligne = reader.readLine()) != null) {
+				jsonResult+= ligne.trim()+"\n";
+		}
+		formatJsonResult(jsonResult);
 	}
-
-
+	
+	public void formatJsonResult(String json){
+		
+	}
 }
